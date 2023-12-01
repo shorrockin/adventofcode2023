@@ -4,7 +4,7 @@ pub fn sum_values(input: &str) -> u32 {
         let mut first: Option<char> = None;
         let mut last: Option<char> = None;
         for c in line.chars() {
-            if c.is_digit(10) {
+            if c.is_ascii_digit() {
                 if first.is_none() {
                     first = Some(c);
                 }
@@ -24,17 +24,17 @@ pub fn normalize_numbers(input: &str) -> String {
     for c in input.chars() {
         result = result + &c.to_string();
         result = result
-            .replace("one", "1")
-            .replace("two", "2")
-            .replace("three", "3")
-            .replace("four", "4")
-            .replace("five", "5")
-            .replace("six", "6")
-            .replace("seven", "7")
-            .replace("eight", "8")
-            .replace("nine", "9")
+            .replace("one", "1e")
+            .replace("two", "2o")
+            .replace("three", "3e")
+            .replace("four", "4r")
+            .replace("five", "5e")
+            .replace("six", "6x")
+            .replace("seven", "7n")
+            .replace("eight", "8t")
+            .replace("nine", "9e")
     }
-    result.to_string()
+    result
 }
 
 #[cfg(test)]
@@ -53,8 +53,9 @@ mod tests {
 
     #[test]
     fn test_part_two() {
-        assert_eq!(normalize_numbers("eightwothree"), "8wo3");
+        assert_eq!(normalize_numbers("eightwothree"), "82o3e");
+        assert_eq!(normalize_numbers("eighthree"), "83e");
         assert_eq!(sum_values(&normalize_numbers(EXAMPLE_TWO)), 281);
-        assert_eq!(sum_values(&normalize_numbers(INPUT)), 53896);
+        assert_eq!(sum_values(&normalize_numbers(INPUT)), 53894);
     }
 }
