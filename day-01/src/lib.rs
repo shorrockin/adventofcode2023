@@ -20,21 +20,16 @@ pub fn sum_values(input: &str) -> u32 {
 }
 
 pub fn normalize_numbers(input: &str) -> String {
-    let mut result: String = "".to_string();
-    for c in input.chars() {
-        result = result + &c.to_string();
-        result = result
-            .replace("one", "1e")
-            .replace("two", "2o")
-            .replace("three", "3e")
-            .replace("four", "4r")
-            .replace("five", "5e")
-            .replace("six", "6x")
-            .replace("seven", "7n")
-            .replace("eight", "8t")
-            .replace("nine", "9e")
-    }
-    result
+    input
+        .replace("one", "o1e")
+        .replace("two", "t2o")
+        .replace("three", "t3e")
+        .replace("four", "f4r")
+        .replace("five", "f5e")
+        .replace("six", "s6x")
+        .replace("seven", "s7n")
+        .replace("eight", "e8t")
+        .replace("nine", "n9e")
 }
 
 #[cfg(test)]
@@ -53,8 +48,8 @@ mod tests {
 
     #[test]
     fn test_part_two() {
-        assert_eq!(normalize_numbers("eightwothree"), "82o3e");
-        assert_eq!(normalize_numbers("eighthree"), "83e");
+        assert_eq!(normalize_numbers("eightwothree"), "e8t2ot3e");
+        assert_eq!(normalize_numbers("eighthree"), "e8t3e");
         assert_eq!(sum_values(&normalize_numbers(EXAMPLE_TWO)), 281);
         assert_eq!(sum_values(&normalize_numbers(INPUT)), 53894);
     }
