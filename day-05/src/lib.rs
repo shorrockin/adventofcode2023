@@ -63,12 +63,12 @@ struct Map {
 }
 impl Map {
     fn new(input: &str) -> Map {
-        let (name, conversions) = input.split_once("\n").unwrap();
+        let (name, conversions) = input.split_once('\n').unwrap();
 
         Map {
-            name: name.split_once(" ").unwrap().0.to_string(),
+            name: name.split_once(' ').unwrap().0.to_string(),
             conversions: conversions
-                .split("\n")
+                .split('\n')
                 .filter(|s| !s.is_empty())
                 .map(Conversion::new)
                 .collect(),

@@ -53,7 +53,7 @@ impl PartNumber {
                 let mut position = *coord;
                 let mut coordinates = vec![];
 
-                while let Some(c) = grid.get(position) {
+                while let Some(c) = grid.get(&position) {
                     if !c.is_ascii_digit() {
                         break;
                     }
@@ -70,13 +70,13 @@ impl PartNumber {
     }
 
     fn is_first_digit(coord: Coordinate, grid: &Grid) -> bool {
-        if let Some(c) = grid.get(coord) {
+        if let Some(c) = grid.get(&coord) {
             if !c.is_ascii_digit() {
                 return false;
             }
 
             let previous = coord + offsets::WEST;
-            if let Some(c) = grid.get(previous) {
+            if let Some(c) = grid.get(&previous) {
                 if c.is_ascii_digit() {
                     return false;
                 }
@@ -97,7 +97,7 @@ impl PartNumber {
 
     fn is_symbol_adjacent(&self, grid: &Grid) -> bool {
         for coord in self.around() {
-            if let Some(c) = grid.get(coord) {
+            if let Some(c) = grid.get(&coord) {
                 if !c.is_ascii_digit() {
                     return true;
                 }
@@ -126,9 +126,9 @@ mod tests {
     fn example_input() {
         let grid = parse(EXAMPLE);
 
-        assert_eq!('4', *grid.get(Coordinate(0, 0)).unwrap());
-        assert_eq!('6', *grid.get(Coordinate(1, 0)).unwrap());
-        assert_eq!('7', *grid.get(Coordinate(2, 0)).unwrap());
+        assert_eq!('4', *grid.get(&Coordinate(0, 0)).unwrap());
+        assert_eq!('6', *grid.get(&Coordinate(1, 0)).unwrap());
+        assert_eq!('7', *grid.get(&Coordinate(2, 0)).unwrap());
 
         let part_numbers = PartNumber::from(&grid);
         assert!(part_numbers.iter().any(|pn| pn.value == 467));
