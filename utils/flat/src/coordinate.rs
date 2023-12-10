@@ -53,6 +53,12 @@ impl Coordinate {
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub struct Offset(pub i32, pub i32);
 
+impl Offset {
+    pub fn invert(&self) -> Offset {
+        Offset(-self.0, -self.1)
+    }
+}
+
 impl std::fmt::Display for Offset {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.write_fmt(format_args!("Offset({},{})", self.0, self.1))

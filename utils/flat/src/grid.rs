@@ -20,26 +20,42 @@ impl std::str::FromStr for Grid {
 }
 
 impl Grid {
-    pub fn get(&self, coord: Coordinate) -> Option<&char> {
-        self.points.get(&coord)
+    pub fn get(&self, coord: &Coordinate) -> Option<&char> {
+        self.points.get(coord)
     }
 
-    pub fn get_offset(&self, coord: Coordinate, offset: Offset) -> Option<&char> {
-        self.points.get(&(coord + offset))
+    pub fn get_with_default(&self, coord: &Coordinate, default: char) -> char {
+        match self.points.get(coord) {
+            Some(c) => *c,
+            None => default,
+        }
+    }
+
+    pub fn find(&self, char: char) -> Option<Coordinate> {
+        for (coord, c) in self.points.iter() {
+            if *c == char {
+                return Some(*coord);
+            }
+        }
+        None
+    }
+
+    pub fn get_offset(&self, coord: &Coordinate, offset: Offset) -> Option<&char> {
+        self.points.get(&(*coord + offset))
     }
 
     pub fn get_all(&self, coords: Vec<Coordinate>) -> Vec<&char> {
         coords
             .iter()
-            .map(|coord| self.get(*coord).unwrap())
+            .map(|coord| self.get(coord).unwrap())
             .collect()
     }
 
-    pub fn is_empty(&self, coord: Coordinate) -> bool {
+    pub fn is_empty(&self, coord: &Coordinate) -> bool {
         self.get(coord).is_none()
     }
 
-    pub fn is_empty_offset(&self, coord: Coordinate, offset: Offset) -> bool {
+    pub fn is_empty_offset(&self, coord: &Coordinate, offset: Offset) -> bool {
         self.get_offset(coord, offset).is_none()
     }
 
