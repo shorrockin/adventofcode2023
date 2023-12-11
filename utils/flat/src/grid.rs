@@ -20,6 +20,12 @@ impl std::str::FromStr for Grid {
 }
 
 impl Grid {
+    pub fn new() -> Grid {
+        Grid {
+            points: HashMap::new(),
+        }
+    }
+
     pub fn get(&self, coord: &Coordinate) -> Option<&char> {
         self.points.get(coord)
     }
@@ -31,15 +37,6 @@ impl Grid {
         }
     }
 
-    pub fn find(&self, char: char) -> Option<Coordinate> {
-        for (coord, c) in self.points.iter() {
-            if *c == char {
-                return Some(*coord);
-            }
-        }
-        None
-    }
-
     pub fn get_offset(&self, coord: &Coordinate, offset: Offset) -> Option<&char> {
         self.points.get(&(*coord + offset))
     }
@@ -48,6 +45,25 @@ impl Grid {
         coords
             .iter()
             .map(|coord| self.get(coord).unwrap())
+            .collect()
+    }
+
+    pub fn find(&self, char: &char) -> Option<Coordinate> {
+        for (coord, c) in self.points.iter() {
+            if c == char {
+                return Some(*coord);
+            }
+        }
+        None
+    }
+
+    pub fn find_all(&self, char: &char) -> Vec<Coordinate> {
+        self.points
+            .iter()
+            .flat_map(|(coord, c)| match c == char {
+                true => Some(*coord),
+                false => None,
+            })
             .collect()
     }
 
@@ -69,5 +85,11 @@ impl Grid {
         for coord in to_remove {
             self.points.remove(&coord);
         }
+    }
+}
+
+impl Default for Grid {
+    fn default() -> Self {
+        Self::new()
     }
 }

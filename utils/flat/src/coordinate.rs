@@ -23,7 +23,7 @@ impl std::str::FromStr for Coordinate {
 }
 
 impl Coordinate {
-    pub fn distance(&self, other: Coordinate) -> u32 {
+    pub fn distance(&self, other: &Coordinate) -> u32 {
         ((self.0 - other.0).abs() + (self.1 - other.1).abs()) as u32
     }
 

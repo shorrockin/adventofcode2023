@@ -3,6 +3,7 @@
 members = [
     "utils/flat",
     "utils/math",
+    "utils/strings",
     "day-01",
     "day-02",
     "day-03",
@@ -13,5 +14,6 @@ members = [
     "day-08",
     "day-09",
     "day-10",
+    "day-11",
 ]
 resolver = "2"
