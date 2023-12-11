@@ -55,7 +55,7 @@ pub fn part_two(input: &str, start_direction: Offset) -> usize {
 }
 
 fn generate_path(grid: &Grid, start_direction: Offset) -> Vec<(Coordinate, Offset)> {
-    let mut current = grid.find(START_CHAR).unwrap() + start_direction;
+    let mut current = grid.find(&START_CHAR).unwrap() + start_direction;
     let mut in_direction = start_direction.invert();
     let mut path = vec![];
 
