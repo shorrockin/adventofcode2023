@@ -1,4 +1,5 @@
 use flat::coordinate::Coordinate;
+use flat::grid::Bounds;
 use flat::grid::Grid;
 use std::collections::HashMap;
 use strings::rotate_right;
@@ -38,7 +39,10 @@ fn parse(input: &str, expansion_size: usize) -> Grid {
             );
         }
     }
-    Grid { points }
+    Grid {
+        points,
+        bounds: Bounds::default(),
+    }
 }
 
 fn calculate_offsets(input: &str, expansion_size: usize) -> Vec<usize> {
