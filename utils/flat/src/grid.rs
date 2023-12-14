@@ -1,6 +1,8 @@
 use crate::coordinate::Coordinate;
 use crate::coordinate::Offset;
+use std::collections::hash_map::DefaultHasher;
 use std::collections::HashMap;
+use std::hash::{Hash, Hasher};
 
 pub struct Grid {
     pub points: HashMap<Coordinate, char>,
@@ -73,12 +75,23 @@ impl Grid {
             .collect()
     }
 
-    pub fn is_empty(&self, coord: &Coordinate) -> bool {
-        self.get(coord).is_none()
-    }
+    pub fn move_point(&mut self, from: Coordinate, to: Coordinate) {
+        if !self.points.contains_key(&from) {
+            panic!(
+                "Cannot move from {:?} to {:?}, no point at {:?}",
+                from, to, from
+            );
+        }
 
-    pub fn is_empty_offset(&self, coord: &Coordinate, offset: Offset) -> bool {
-        self.get_offset(coord, offset).is_none()
+        if self.points.contains_key(&to) {
+            panic!(
+                "Cannot move from {:?} to {:?}, point already exists at {:?}",
+                from, to, to
+            );
+        }
+
+        let c = self.points.remove(&from).unwrap();
+        self.points.insert(to, c);
     }
 
     pub fn remove_char(&mut self, char: char) {
@@ -93,6 +106,35 @@ impl Grid {
         }
     }
 
+    pub fn is_empty(&self, coord: &Coordinate) -> bool {
+        self.get(coord).is_none()
+    }
+
+    pub fn is_empty_offset(&self, coord: &Coordinate, offset: Offset) -> bool {
+        self.get_offset(coord, offset).is_none()
+    }
+
+    pub fn is_not_equal(&self, coord: &Coordinate, char: &char) -> bool {
+        match self.get(coord) {
+            Some(c) => c != char,
+            None => true,
+        }
+    }
+
+    pub fn is_equal(&self, coord: &Coordinate, char: &char) -> bool {
+        match self.get(coord) {
+            Some(c) => c == char,
+            None => false,
+        }
+    }
+
+    pub fn in_bounds(&self, coord: &Coordinate) -> bool {
+        coord.0 >= self.bounds.x.min
+            && coord.0 <= self.bounds.x.max
+            && coord.1 >= self.bounds.y.min
+            && coord.1 <= self.bounds.y.max
+    }
+
     pub fn rotate_right(&self) -> Grid {
         let mut new_grid = Grid::new();
         for (coord, c) in self.points.iter() {
@@ -102,11 +144,77 @@ impl Grid {
         }
         new_grid
     }
+
+    pub fn hash(&self) -> u64 {
+        let mut hasher = DefaultHasher::new();
+        let mut hash_codes: Vec<u64> = self
+            .points
+            .iter()
+            .map(|(key, value)| {
+                let mut s = DefaultHasher::new();
+                key.hash(&mut s);
+                value.hash(&mut s);
+                s.finish()
+            })
+            .collect();
+
+        hash_codes.sort_unstable();
+
+        for hash in &hash_codes {
+            hash.hash(&mut hasher);
+        }
+
+        hasher.finish()
+    }
+
+    pub fn format_default(&self) -> String {
+        self.format(GridFormatter::default())
+    }
+
+    pub fn format(&self, formatter: GridFormatter) -> String {
+        (0..=self.bounds.y.max)
+            .map(|y| {
+                (0..=self.bounds.x.max)
+                    .map(|x| match self.get(&Coordinate(x, y)) {
+                        Some(c) => formatter
+                            .replace
+                            .get(c)
+                            .unwrap_or(&c.to_string())
+                            .to_owned(),
+                        None => formatter.empty.to_string(),
+                    })
+                    .collect::<Vec<String>>()
+                    .join("")
+            })
+            .collect::<Vec<String>>()
+            .join("\n")
+    }
 }
 
 impl Default for Grid {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+pub struct GridFormatter {
+    empty: char,
+    replace: HashMap<char, String>,
+}
+impl GridFormatter {
+    pub fn new(empty: char, replace: Vec<(char, String)>) -> GridFormatter {
+        GridFormatter {
+            empty,
+            replace: replace.into_iter().collect(),
+        }
+    }
+}
+impl Default for GridFormatter {
+    fn default() -> Self {
+        GridFormatter {
+            empty: ' ',
+            replace: HashMap::new(),
+        }
     }
 }
 
