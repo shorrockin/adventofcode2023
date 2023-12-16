@@ -1,7 +1,6 @@
 use flat::{
-    coordinate::offsets::{EAST, NORTH, SOUTH, WEST},
     coordinate::Coordinate,
-    coordinate::Offset,
+    coordinate::Direction::{self, East, North, South, West},
     grid::Grid,
 };
 use std::collections::HashSet;
@@ -9,14 +8,14 @@ use std::str::FromStr;
 
 const START_CHAR: char = 'S';
 
-pub fn part_one(input: &str, start_direction: Offset) -> usize {
+pub fn part_one(input: &str, start_direction: Direction) -> usize {
     generate_path(&Grid::from_str(input).unwrap(), start_direction).len() / 2
 }
 
 // start direction should be specified such that the "right" of the path points
 // to the inward loop. we could of course write code to figure this out, but it's
 // also trivial to pass it in by looking at our dataset.
-pub fn part_two(input: &str, start_direction: Offset) -> usize {
+pub fn part_two(input: &str, start_direction: Direction) -> usize {
     let grid = Grid::from_str(input).unwrap();
     let path = generate_path(&grid, start_direction);
     let path_coordinates = path.iter().map(|(coord, _)| *coord).collect::<HashSet<_>>();
@@ -54,7 +53,7 @@ pub fn part_two(input: &str, start_direction: Offset) -> usize {
     processed.len()
 }
 
-fn generate_path(grid: &Grid, start_direction: Offset) -> Vec<(Coordinate, Offset)> {
+fn generate_path(grid: &Grid, start_direction: Direction) -> Vec<(Coordinate, Direction)> {
     let mut current = grid.find(&START_CHAR).unwrap() + start_direction;
     let mut in_direction = start_direction.invert();
     let mut path = vec![];
@@ -72,38 +71,41 @@ fn generate_path(grid: &Grid, start_direction: Offset) -> Vec<(Coordinate, Offse
     path
 }
 
-pub fn out_direction(coordinate: &Coordinate, grid: &Grid, in_direction: Offset) -> Offset {
+pub fn out_direction(coordinate: &Coordinate, grid: &Grid, in_direction: Direction) -> Direction {
     match (in_direction, grid.get(coordinate).unwrap()) {
         (_, '|') => in_direction.invert(),
         (_, '-') => in_direction.invert(),
-        // can't use offsets constants here, as much as it would read better 🤷
-        (Offset(0, -1), 'L') => EAST,
-        (Offset(1, 0), 'L') => NORTH,
-        (Offset(0, -1), 'J') => WEST,
-        (Offset(-1, 0), 'J') => NORTH,
-        (Offset(0, 1), '7') => WEST,
-        (Offset(-1, 0), '7') => SOUTH,
-        (Offset(0, 1), 'F') => EAST,
-        (Offset(1, 0), 'F') => SOUTH,
+        (North, 'L') => East,
+        (East, 'L') => North,
+        (North, 'J') => West,
+        (West, 'J') => North,
+        (South, '7') => West,
+        (West, '7') => South,
+        (South, 'F') => East,
+        (East, 'F') => South,
         _ => panic!("invalid character, cannot resolve"),
     }
 }
 
-pub fn inner_points(coordinate: &Coordinate, grid: &Grid, in_direction: Offset) -> Vec<Offset> {
+pub fn inner_points(
+    coordinate: &Coordinate,
+    grid: &Grid,
+    in_direction: Direction,
+) -> Vec<Direction> {
     match (in_direction, grid.get(coordinate).unwrap()) {
-        (Offset(0, -1), '|') => vec![WEST],        // from the north
-        (Offset(0, 1), '|') => vec![EAST],         // from the south
-        (Offset(1, 0), '-') => vec![NORTH],        // from the east
-        (Offset(-1, 0), '-') => vec![SOUTH],       // from the west
-        (Offset(0, -1), 'L') => vec![WEST, SOUTH], // from the north
-        (Offset(1, 0), 'L') => vec![],             // from the east (corner scenario)
-        (Offset(0, -1), 'J') => vec![],            // from the north (corner scenario)
-        (Offset(-1, 0), 'J') => vec![SOUTH, EAST], // from the west
-        (Offset(0, 1), '7') => vec![EAST, NORTH],  // from the south
-        (Offset(-1, 0), '7') => vec![],            // from the west (corner scenario)
-        (Offset(0, 1), 'F') => vec![],             // from the south (corner scenario)
-        (Offset(1, 0), 'F') => vec![NORTH, WEST],  // from the east
-        (_, 'S') => vec![],                        // ignore starting point
+        (North, '|') => vec![West],
+        (South, '|') => vec![East],
+        (East, '-') => vec![North],
+        (West, '-') => vec![South],
+        (North, 'L') => vec![West, South],
+        (East, 'L') => vec![],
+        (North, 'J') => vec![],
+        (West, 'J') => vec![South, East],
+        (South, '7') => vec![East, North],
+        (West, '7') => vec![],
+        (South, 'F') => vec![],
+        (East, 'F') => vec![North, West],
+        (_, 'S') => vec![],
         _ => panic!("invalid character for inner points, cannot resolve"),
     }
 }
@@ -120,15 +122,15 @@ mod tests {
 
     #[test]
     fn test_part_one() {
-        assert_eq!(8, part_one(EXAMPLE_ONE, SOUTH));
-        assert_eq!(7012, part_one(INPUT, EAST));
+        assert_eq!(8, part_one(EXAMPLE_ONE, South));
+        assert_eq!(7012, part_one(INPUT, East));
     }
 
     #[test]
     fn test_part_two() {
-        assert_eq!(4, part_two(EXAMPLE_TWO, EAST));
-        assert_eq!(8, part_two(EXAMPLE_THREE, SOUTH));
-        assert_eq!(10, part_two(EXAMPLE_FOUR, SOUTH));
-        assert_eq!(395, part_two(INPUT, EAST));
+        assert_eq!(4, part_two(EXAMPLE_TWO, East));
+        assert_eq!(8, part_two(EXAMPLE_THREE, South));
+        assert_eq!(10, part_two(EXAMPLE_FOUR, South));
+        assert_eq!(395, part_two(INPUT, East));
     }
 }

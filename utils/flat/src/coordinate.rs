@@ -35,23 +35,23 @@ impl Coordinate {
 
     pub fn cardinals(&self) -> Vec<Coordinate> {
         vec![
-            *self + offsets::NORTH,
-            *self + offsets::SOUTH,
-            *self + offsets::EAST,
-            *self + offsets::WEST,
+            *self + Direction::North,
+            *self + Direction::South,
+            *self + Direction::East,
+            *self + Direction::West,
         ]
     }
 
     pub fn intercardinals(&self) -> Vec<Coordinate> {
         vec![
-            *self + offsets::NORTH,
-            *self + offsets::NORTH_EAST,
-            *self + offsets::NORTH_WEST,
-            *self + offsets::SOUTH,
-            *self + offsets::SOUTH_EAST,
-            *self + offsets::SOUTH_WEST,
-            *self + offsets::EAST,
-            *self + offsets::WEST,
+            *self + Direction::North,
+            *self + Direction::NorthEast,
+            *self + Direction::NorthWest,
+            *self + Direction::South,
+            *self + Direction::SouthEast,
+            *self + Direction::SouthWest,
+            *self + Direction::East,
+            *self + Direction::West,
         ]
     }
 }
@@ -85,19 +85,6 @@ impl From<Direction> for Offset {
     }
 }
 
-// TODO: deprecated, enum below works better
-pub mod offsets {
-    use super::*;
-    pub static NORTH: Offset = Offset(0, -1);
-    pub static NORTH_WEST: Offset = Offset(-1, -1);
-    pub static NORTH_EAST: Offset = Offset(1, -1);
-    pub static SOUTH: Offset = Offset(0, 1);
-    pub static SOUTH_WEST: Offset = Offset(-1, 1);
-    pub static SOUTH_EAST: Offset = Offset(1, 1);
-    pub static EAST: Offset = Offset(1, 0);
-    pub static WEST: Offset = Offset(-1, 0);
-}
-
 #[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
 pub enum Direction {
     North,
@@ -120,6 +107,19 @@ impl Direction {
             Direction::SouthEast => Offset(1, 1),
             Direction::East => Offset(1, 0),
             Direction::West => Offset(-1, 0),
+        }
+    }
+
+    pub fn invert(&self) -> Direction {
+        match self {
+            Direction::North => Direction::South,
+            Direction::NorthWest => Direction::SouthEast,
+            Direction::NorthEast => Direction::SouthWest,
+            Direction::South => Direction::North,
+            Direction::SouthWest => Direction::NorthEast,
+            Direction::SouthEast => Direction::NorthWest,
+            Direction::East => Direction::West,
+            Direction::West => Direction::East,
         }
     }
 }
@@ -145,7 +145,7 @@ mod tests {
     #[test]
     fn offset_addition() {
         let c = Coordinate(1, 1);
-        let n = c + offsets::NORTH;
+        let n = c + Direction::North;
         assert_eq!(n, Coordinate(1, 0));
     }
 }

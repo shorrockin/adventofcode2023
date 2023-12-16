@@ -1,5 +1,5 @@
-use flat::coordinate::offsets::{EAST, NORTH, SOUTH, WEST};
 use flat::coordinate::Coordinate;
+use flat::coordinate::Direction::{East, North, South, West};
 use flat::grid::Grid;
 use std::collections::HashMap;
 use std::str::FromStr;
@@ -53,10 +53,10 @@ fn parse(input: &str) -> Grid {
 
 fn tilt(mut grid: Grid, tilt: Tilt) -> Grid {
     let (starting_point, side_direction, rock_direction) = match tilt {
-        Tilt::North => (Coordinate(0, 0), EAST, SOUTH),
-        Tilt::South => (Coordinate(0, grid.bounds.y.max), EAST, NORTH),
-        Tilt::West => (Coordinate(0, 0), SOUTH, EAST),
-        Tilt::East => (Coordinate(grid.bounds.x.max, 0), SOUTH, WEST),
+        Tilt::North => (Coordinate(0, 0), East, South),
+        Tilt::South => (Coordinate(0, grid.bounds.y.max), East, North),
+        Tilt::West => (Coordinate(0, 0), South, East),
+        Tilt::East => (Coordinate(grid.bounds.x.max, 0), South, West),
     };
 
     let mut side_position = starting_point;

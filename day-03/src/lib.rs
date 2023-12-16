@@ -1,5 +1,5 @@
-use flat::coordinate::offsets;
 use flat::coordinate::Coordinate;
+use flat::coordinate::Direction;
 use flat::grid::Grid;
 use std::collections::HashSet;
 
@@ -59,7 +59,7 @@ impl PartNumber {
                     }
                     str_value += c.to_string().as_str();
                     coordinates.push(position);
-                    position = position + offsets::EAST;
+                    position = position + Direction::East;
                 }
 
                 let value = str_value.parse().unwrap();
@@ -75,7 +75,7 @@ impl PartNumber {
                 return false;
             }
 
-            let previous = coord + offsets::WEST;
+            let previous = coord + Direction::West;
             if let Some(c) = grid.get(&previous) {
                 if c.is_ascii_digit() {
                     return false;
