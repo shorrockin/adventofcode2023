@@ -3,6 +3,7 @@ use crate::coordinate::Offset;
 use std::collections::hash_map::DefaultHasher;
 use std::collections::HashMap;
 use std::hash::{Hash, Hasher};
+use std::str::FromStr;
 
 pub struct Grid {
     pub points: HashMap<Coordinate, char>,
@@ -32,6 +33,10 @@ impl Grid {
             points: HashMap::new(),
             bounds: Bounds::default(),
         }
+    }
+
+    pub fn parse(input: &str) -> Grid {
+        Grid::from_str(input).unwrap()
     }
 
     pub fn get(&self, coord: &Coordinate) -> Option<&char> {
@@ -73,6 +78,11 @@ impl Grid {
                 false => None,
             })
             .collect()
+    }
+
+    pub fn insert(&mut self, coord: Coordinate, char: char) {
+        self.points.insert(coord, char);
+        self.bounds.update(coord);
     }
 
     pub fn move_point(&mut self, from: Coordinate, to: Coordinate) {
@@ -218,7 +228,7 @@ impl Default for GridFormatter {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub struct Bounds {
     pub x: BoundValue,
     pub y: BoundValue,
@@ -241,7 +251,7 @@ impl Default for Bounds {
     }
 }
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub struct BoundValue {
     pub min: i32,
     pub max: i32,

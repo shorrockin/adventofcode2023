@@ -7,10 +7,16 @@ impl core::ops::Add<Offset> for Coordinate {
         Coordinate(self.0 + direction.0, self.1 + direction.1)
     }
 }
+impl core::ops::Add<Direction> for Coordinate {
+    type Output = Coordinate;
+    fn add(self, direction: Direction) -> Coordinate {
+        self + direction.value()
+    }
+}
 
 impl std::fmt::Display for Coordinate {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.write_fmt(format_args!("Coordinate({},{})", self.0, self.1))
+        f.write_fmt(format_args!("(x:{}, y:{})", self.0, self.1))
     }
 }
 
@@ -73,6 +79,13 @@ impl std::str::FromStr for Offset {
     }
 }
 
+impl From<Direction> for Offset {
+    fn from(direction: Direction) -> Offset {
+        direction.value()
+    }
+}
+
+// TODO: deprecated, enum below works better
 pub mod offsets {
     use super::*;
     pub static NORTH: Offset = Offset(0, -1);
@@ -83,6 +96,46 @@ pub mod offsets {
     pub static SOUTH_EAST: Offset = Offset(1, 1);
     pub static EAST: Offset = Offset(1, 0);
     pub static WEST: Offset = Offset(-1, 0);
+}
+
+#[derive(Clone, Copy, Debug, Eq, Hash, Ord, PartialEq, PartialOrd)]
+pub enum Direction {
+    North,
+    NorthWest,
+    NorthEast,
+    South,
+    SouthWest,
+    SouthEast,
+    East,
+    West,
+}
+impl Direction {
+    pub fn value(&self) -> Offset {
+        match self {
+            Direction::North => Offset(0, -1),
+            Direction::NorthWest => Offset(-1, -1),
+            Direction::NorthEast => Offset(1, -1),
+            Direction::South => Offset(0, 1),
+            Direction::SouthWest => Offset(-1, 1),
+            Direction::SouthEast => Offset(1, 1),
+            Direction::East => Offset(1, 0),
+            Direction::West => Offset(-1, 0),
+        }
+    }
+}
+impl std::fmt::Display for Direction {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Direction::North => f.write_str("North"),
+            Direction::NorthWest => f.write_str("NorthWest"),
+            Direction::NorthEast => f.write_str("NorthEast"),
+            Direction::South => f.write_str("South"),
+            Direction::SouthWest => f.write_str("SouthWest"),
+            Direction::SouthEast => f.write_str("SouthEast"),
+            Direction::East => f.write_str("East"),
+            Direction::West => f.write_str("West"),
+        }
+    }
 }
 
 #[cfg(test)]
