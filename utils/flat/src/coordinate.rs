@@ -122,6 +122,39 @@ impl Direction {
             Direction::West => Direction::East,
         }
     }
+
+    pub fn cardinal_turn_right(&self) -> Direction {
+        match self {
+            Direction::North => Direction::East,
+            Direction::East => Direction::South,
+            Direction::South => Direction::West,
+            Direction::West => Direction::North,
+            _ => panic!("not a cardinal direction"),
+        }
+    }
+
+    pub fn cardinal_turn_left(&self) -> Direction {
+        match self {
+            Direction::North => Direction::West,
+            Direction::East => Direction::North,
+            Direction::South => Direction::East,
+            Direction::West => Direction::South,
+            _ => panic!("not a cardinal direction"),
+        }
+    }
+
+    pub fn char(&self) -> char {
+        match self {
+            Direction::North => '^',
+            Direction::NorthWest => '\\',
+            Direction::NorthEast => '/',
+            Direction::South => 'v',
+            Direction::SouthWest => '/',
+            Direction::SouthEast => '\\',
+            Direction::East => '>',
+            Direction::West => '<',
+        }
+    }
 }
 impl std::fmt::Display for Direction {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {

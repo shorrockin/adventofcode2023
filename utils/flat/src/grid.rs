@@ -120,6 +120,10 @@ impl Grid {
         self.get(coord).is_none()
     }
 
+    pub fn is_some(&self, coord: &Coordinate) -> bool {
+        self.get(coord).is_some()
+    }
+
     pub fn is_empty_offset(&self, coord: &Coordinate, offset: Offset) -> bool {
         self.get_offset(coord, offset).is_none()
     }
@@ -239,6 +243,14 @@ impl Bounds {
         self.x.max = self.x.max.max(coord.0);
         self.y.min = self.y.min.min(coord.1);
         self.y.max = self.y.max.max(coord.1);
+    }
+
+    pub fn max(&self) -> Coordinate {
+        Coordinate(self.x.max, self.y.max)
+    }
+
+    pub fn min(&self) -> Coordinate {
+        Coordinate(self.x.min, self.y.min)
     }
 }
 
