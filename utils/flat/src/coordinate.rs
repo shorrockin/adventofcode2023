@@ -63,6 +63,10 @@ impl Offset {
     pub fn invert(&self) -> Offset {
         Offset(-self.0, -self.1)
     }
+
+    pub fn times(&self, times: i32) -> Offset {
+        Offset(self.0 * times, self.1 * times)
+    }
 }
 
 impl std::fmt::Display for Offset {
