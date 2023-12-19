@@ -19,6 +19,13 @@ pub fn rotate_right(input: &str) -> String {
     transformed
 }
 
+pub fn split_last(input: &str, delimiter: char) -> (&str, &str) {
+    match input.rfind(delimiter) {
+        Some(index) => (&input[..index], &input[index + 1..]),
+        None => (input, ""),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -28,5 +35,10 @@ mod tests {
         let input = "123\n456\n789";
         let expected = "741\n852\n963";
         assert_eq!(expected, rotate_right(input));
+    }
+
+    #[test]
+    fn test_split_last() {
+        assert_eq!(("abc,efg", "def"), split_last("abc,efg,def", ','));
     }
 }
