@@ -252,6 +252,26 @@ impl Bounds {
     pub fn min(&self) -> Coordinate {
         Coordinate(self.x.min, self.y.min)
     }
+
+    pub fn width(&self) -> i32 {
+        self.x.size()
+    }
+
+    pub fn height(&self) -> i32 {
+        self.y.size()
+    }
+
+    // if our bounds are unbounded, thus repeat infinitely, then we need
+    // to convert our unbounded coordinates to our local coordinate
+    pub fn unbounded_to_local(&self, coord: &Coordinate) -> Coordinate {
+        assert_eq!(0, self.x.min, "this doesn't work for non-zero min x bounds");
+        assert_eq!(0, self.y.min, "this doesn't work for non-zero min y bounds");
+
+        Coordinate(
+            coord.0.rem_euclid(self.width()),
+            coord.1.rem_euclid(self.height()),
+        )
+    }
 }
 
 impl Default for Bounds {
@@ -267,4 +287,32 @@ impl Default for Bounds {
 pub struct BoundValue {
     pub min: i32,
     pub max: i32,
+}
+impl BoundValue {
+    pub fn size(&self) -> i32 {
+        // +1 because we're inclusive
+        self.max - self.min + 1
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn unbounded_coordinates_can_be_translated() {
+        let bounds = Bounds {
+            x: BoundValue { min: 0, max: 5 },
+            y: BoundValue { min: 0, max: 6 },
+        };
+        assert_eq!(6, bounds.width());
+        assert_eq!(7, bounds.height());
+        assert_eq!(
+            Coordinate(1, 4),
+            bounds.unbounded_to_local(&Coordinate(7, -3))
+        );
+        assert_eq!(
+            Coordinate(5, 6),
+            bounds.unbounded_to_local(&Coordinate(5, 6))
+        );
+    }
 }
