@@ -1,37 +1,24 @@
-use flat::coordinate::Coordinate;
-use flat::grid::Grid;
-use itertools::Itertools;
-use std::collections::HashMap;
-use std::collections::VecDeque;
+use flat::{coordinate::Coordinate, grid::Grid};
+use std::collections::{HashMap, VecDeque};
 
 pub fn part_one(input: &str, steps: usize) -> usize {
-    let grid = Grid::parse(input);
-    let start = grid.find(&'S').unwrap();
-    let mut positions = vec![start];
-
-    for _ in 0..steps {
-        positions = positions
-            .into_iter()
-            .flat_map(|p| p.cardinals())
-            .filter(|c| grid.is_some(c))
-            .filter(|c| grid.is_not_equal(c, &'#'))
-            .unique()
-            .collect()
-    }
-
-    positions.len()
+    solve(input, steps, true)
 }
 
-// this algorithm is based on this write:
+pub fn part_two(input: &str) -> usize {
+    solve(input, 26501365, false)
+}
+
+// this algorithm is inspured on this writeup:
 //   https://github.com/villuna/aoc23/wiki/A-Geometric-solution-to-advent-of-code-2023,-day-21
 // which is implemented below with very few differences. my instinct was to use google sheets
 // to figure out the pattern, but after staring at data for too long i couldn't put together
 // a hypthothesis that worked. i then started working towards a geometric solution, similar
 // to the one described above, however, i was unable to resolve the corner squares until this
 // write-up outlined it.
-pub fn part_two(input: &str) -> usize {
+pub fn solve(input: &str, steps: usize, part_one: bool) -> usize {
     let grid = Grid::parse(input);
-    let grid_size = grid.bounds.width();
+    let grid_size = grid.bounds.width() as usize;
     let mut queue = VecDeque::<(Coordinate, usize)>::new();
     let mut visited = HashMap::new();
 
@@ -53,10 +40,18 @@ pub fn part_two(input: &str) -> usize {
             .for_each(|neighbor| queue.push_back((*neighbor, dist + 1)));
     }
 
+    if part_one {
+        return visited
+            .iter()
+            .filter(|(_, distance)| **distance <= steps)
+            .filter(|(_, distance)| **distance % 2 == 0)
+            .count();
+    }
+
     // Our input is 131x131 tiles in size, and 26501365 = 65 + (202300 * 131). 65
     // is the number of steps it takes to get from the centre of the square to the
     // edge, and 131 is the number of steps it takes to traverse the whole square
-    let squares_width_traveled = ((26501365 - (grid_size / 2)) / grid_size) as usize;
+    let squares_width_traveled = (steps - (grid_size / 2)) / grid_size;
     assert_eq!(squares_width_traveled, 202300); // 2023...cute
 
     let even_corners = visited
