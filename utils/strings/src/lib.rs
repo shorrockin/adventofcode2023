@@ -26,6 +26,44 @@ pub fn split_last(input: &str, delimiter: char) -> (&str, &str) {
     }
 }
 
+pub struct AlphabeticCounter {
+    next_char: u8,
+    counter: usize,
+}
+impl AlphabeticCounter {
+    pub fn new() -> AlphabeticCounter {
+        AlphabeticCounter {
+            next_char: b'A',
+            counter: 0,
+        }
+    }
+}
+impl Default for AlphabeticCounter {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+impl Iterator for AlphabeticCounter {
+    type Item = String;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.next_char > b'Z' {
+            self.next_char = b'A';
+            self.counter += 1;
+        }
+
+        let mut str = String::from_utf8(vec![self.next_char]).unwrap();
+
+        if self.counter > 0 {
+            str.push_str(&self.counter.to_string());
+        }
+
+        self.next_char += 1;
+
+        Some(str)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
