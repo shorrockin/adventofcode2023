@@ -116,6 +116,14 @@ impl Grid {
         }
     }
 
+    pub fn replace_char(&mut self, from: char, to: char) {
+        for (_, c) in self.points.iter_mut() {
+            if *c == from {
+                *c = to;
+            }
+        }
+    }
+
     pub fn is_empty(&self, coord: &Coordinate) -> bool {
         self.get(coord).is_none()
     }
