@@ -1,6 +1,7 @@
 .DS_Store
 target
 day-*/watch
+day-*/.z3-trace
 *.log
 profile*.txt
 output*.txt
