@@ -20,8 +20,7 @@ pub fn part_one(input: &str, min: f64, max: f64) -> usize {
 
 pub fn part_two(input: &str) -> i64 {
     let coords = parse(input);
-    let config = Config::new();
-    let context = Context::new(&config);
+    let context = Context::new(&Config::new());
     let solver = Solver::new(&context);
 
     let x = Int::new_const(&context, "x");
@@ -40,11 +39,11 @@ pub fn part_two(input: &str) -> i64 {
         let vb = Int::from_i64(&context, coord.vy);
         let vc = Int::from_i64(&context, coord.vz);
 
-        let time = Int::new_const(&context, format!("t{i}"));
-        solver.assert(&time.gt(&Int::from_i64(&context, 0)));
-        solver.assert(&(x.clone() + vx.clone() * time.clone())._eq(&(a + va * time.clone())));
-        solver.assert(&(y.clone() + vy.clone() * time.clone())._eq(&(b + vb * time.clone())));
-        solver.assert(&(z.clone() + vz.clone() * time.clone())._eq(&(c + vc * time.clone())));
+        let t = Int::new_const(&context, format!("t{i}"));
+        solver.assert(&t.gt(&Int::from_i64(&context, 0)));
+        solver.assert(&(x.clone() + vx.clone() * t.clone())._eq(&(a + va * t.clone())));
+        solver.assert(&(y.clone() + vy.clone() * t.clone())._eq(&(b + vb * t.clone())));
+        solver.assert(&(z.clone() + vz.clone() * t.clone())._eq(&(c + vc * t.clone())));
     }
 
     if solver.check() != SatResult::Sat {
