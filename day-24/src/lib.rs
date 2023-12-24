@@ -20,8 +20,8 @@ pub fn part_one(input: &str, min: f64, max: f64) -> usize {
 
 pub fn part_two(input: &str) -> i64 {
     let coords = parse(input);
-    let cfg = Config::new();
-    let context = Context::new(&cfg);
+    let config = Config::new();
+    let context = Context::new(&config);
     let solver = Solver::new(&context);
 
     let x = Int::new_const(&context, "x");
@@ -128,6 +128,6 @@ mod tests {
     fn test_part_two() {
         assert_eq!(47, part_two(EXAMPLE));
         // too slow for tests
-        //assert_eq!(0, part_two(INPUT));
+        //assert_eq!(765636044333842, part_two(INPUT));
     }
 }
